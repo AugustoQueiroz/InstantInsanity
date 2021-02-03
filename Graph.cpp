@@ -10,6 +10,10 @@ Graph::Graph(int n): vertices(n) {
 
 }
 
+Graph::Graph(int n, std::vector<Edge*> e): vertices(n), edges(e) {
+
+}
+
 void Graph::addEdge(Edge& e) {
     this->edges.push_back(&e);
 }

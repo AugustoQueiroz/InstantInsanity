@@ -22,6 +22,7 @@ class Graph {
 
     public:
         Graph(int n);
+        Graph(int n, std::vector<Edge*> e);
     
         void addEdge(Edge& e);
 
