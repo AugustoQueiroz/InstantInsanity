@@ -37,9 +37,8 @@ std::vector<Edge*> Graph::edgesWithTerminal(int t) {
 std::vector<Edge*> Graph::edgesSharedWith(const Graph& other) {
     std::vector<Edge*> sharedEdges;
 
-    // #pragma omp declare reduction (merge : std::vector<Edge*> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
-
-    // #pragma omp parallel for reduction(merge: sharedEdges)
+    #pragma omp declare reduction (merge : std::vector<Edge*> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
+    #pragma omp parallel for reduction(merge: sharedEdges)
     for (int i = 0; i < this->edges.size(); i++) {
         if (find(other.edges.begin(), other.edges.end(), this->edges[i]) != other.edges.end()) {
             sharedEdges.push_back(this->edges[i]);
