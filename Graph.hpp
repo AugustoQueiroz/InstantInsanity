@@ -2,6 +2,7 @@
 #define _GRAPH_H_
 
 #include <vector>
+#include <functional>
 
 class Edge {
     private:
@@ -26,12 +27,15 @@ class Graph {
     
         void addEdge(Edge& e);
 
-        std::vector<Edge*> getEdges(bool (*filter)(Edge* e) = [](Edge* e){ return true; });
+        std::vector<Edge*> getEdges(const std::function<bool (Edge*)>& filter = [](Edge* e){ return true; });
         std::vector<Edge*> edgesFromCube(int c);
         std::vector<Edge*> edgesWithTerminal(int t);
-        std::vector<Edge*> edgesSharedWith(Graph& other);
+        std::vector<Edge*> edgesSharedWith(const Graph& other);
+        bool isEquivalent(const Graph& other);
         Graph* combine(Graph& other);
         bool isValidForH();
+        bool isValidH();
+        std::vector<Graph> getHs();
 };
 
 #endif
