@@ -1,6 +1,6 @@
 # Instant Insanity
 
-This is a solver for the Instant Insanity puzzle.
+This is a solver for the [Instant Insanity puzzle](https://en.wikipedia.org/wiki/Instant_Insanity).
 
 ## Theoretical Framework
 
