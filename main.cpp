@@ -39,8 +39,8 @@ int main() {
     std::cout << "There are " << Hs.size() << " candidates for H1 & H2." << std::endl;
 
     std::vector<std::tuple<Graph, Graph>> solutions;
-    // #pragma omp declare reduction (merge : std::vector<std::tuple<Graph, Graph>> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
-    // #pragma omp parallel for reduction(merge: solutions)
+    #pragma omp declare reduction (merge : std::vector<std::tuple<Graph, Graph>> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
+    #pragma omp parallel for reduction(merge: solutions)
     for (int i = 0; i < Hs.size(); i++) {
         Graph H1 = Hs[i];
         std::vector<Graph> validH2s;

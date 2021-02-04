@@ -108,17 +108,18 @@ std::vector<Graph> Graph::getHs() {
 
     #pragma omp declare reduction (merge : std::vector<Graph> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
 
-    // #pragma omp parallel for reduction(merge: possibleHs)
+    #pragma omp parallel for reduction(merge: possibleHs)
     for (int i = 0; i < this->edges.size(); i++) {
-        auto poppedEdge = edges.back();
-        edges.pop_back();
+        auto edges_local = edges;
+        auto poppedEdge = edges_local.at(i);
+        edges_local.erase(edges_local.begin() + i);
 
-        Graph aux = Graph(this->vertices, edges);
+        Graph aux = Graph(this->vertices, edges_local);
         std::vector<Graph> auxPossibleHs = aux.getHs();
 
         possibleHs.insert(possibleHs.end(), auxPossibleHs.begin(), auxPossibleHs.end());
 
-        edges.insert(edges.begin(), poppedEdge);
+        edges_local.insert(edges_local.begin(), poppedEdge);
     }
 
     for (int i = 0; i < possibleHs.size(); i++) {

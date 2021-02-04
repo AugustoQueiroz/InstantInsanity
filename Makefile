@@ -6,7 +6,7 @@ LINKER = g++
 #options for linker and compiler
 FLAGS =-g -ansi -Wall -Wextra -Wold-style-cast -Woverloaded-virtual -D_DEBUG_ -std=c++17 -Ofast -fopenmp
 
-EXE_NAME= main.exe
+EXE_NAME= InstantInsanity.exe
 
 #can have several ones separated by spaces, only cpp files
 SOURCES = main.cpp Graph.cpp 
