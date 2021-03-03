@@ -8,6 +8,10 @@ Edge::Edge(int c, int t1, int t2): cube(c), terminal1(t1), terminal2(t2) {
 
 }
 
+Edge* Edge::inverted() {
+    return new Edge(this->cube, this->terminal2, this->terminal1);
+}
+
 Graph::Graph(int n): vertices(n) {
 
 }

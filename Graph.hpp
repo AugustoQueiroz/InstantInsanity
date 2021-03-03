@@ -14,6 +14,8 @@ class Edge {
         int getCube() { return this->cube; };
         int getTerminal1() { return this->terminal1; };
         int getTerminal2() { return this->terminal2; };
+
+        Edge* inverted();
 };
 
 class Graph {
