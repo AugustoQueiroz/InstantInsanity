@@ -33,9 +33,9 @@ class Graph {
         std::vector<Edge*> edgesFromCube(int c);
         std::vector<Edge*> edgesWithTerminal(int t);
         std::vector<Edge*> edgesSharedWith(const Graph& other);
+        int degree(int n);
         bool isEquivalent(const Graph& other);
         Graph* combine(Graph& other);
-        bool isValidForH();
         bool isValidH();
         std::vector<Graph> getHs();
 };

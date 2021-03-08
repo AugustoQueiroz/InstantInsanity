@@ -1,8 +1,11 @@
 #include "Graph.hpp"
 
 #include <algorithm>
+#include <map>
+#include <iostream>
 
 #include <omp.h>
+#include <cmath>
 
 Edge::Edge(int c, int t1, int t2): cube(c), terminal1(t1), terminal2(t2) {
 
@@ -56,6 +59,12 @@ bool Graph::isEquivalent(const Graph& other) {
     return this->edgesSharedWith(other).size() == this->edges.size();
 }
 
+int Graph::degree(int n) {
+    int d = this->getEdges([&, n](Edge* e){ return e->getTerminal1() == n; }).size();
+    d += this->getEdges([&, n](Edge* e){ return e->getTerminal2() == n; }).size();
+    return d;
+}
+
 Graph* Graph::combine(Graph& other) {
     // TODO - Deal with graphs with different n of vertices
     Graph* combined = new Graph(this->vertices);
@@ -69,27 +78,13 @@ Graph* Graph::combine(Graph& other) {
     return combined;
 }
 
-bool Graph::isValidForH() {
-    for (int i = 0; i < this->vertices; i++) {
-        if (this->edgesFromCube(i).size() == 0) {
-            // Can't have one edge from each cube if there is a cube with no edges
-            return false;
-        }
-        if (this->edgesWithTerminal(i).size() < 2) {
-            // Can't have 2 edges for each vertex if there is a vertex with < 2 edges
-            return false;
-        }
-    }
-    return true;
-}
-
 bool Graph::isValidH() {
     for (int i = 0; i < this->vertices; i++) {
         if (this->edgesFromCube(i).size() != 1) {
             // Must have exactly 1 edge from each cube
             return false;
         }
-        if (this->edgesWithTerminal(i).size() != 2) {
+        if (this->degree(i) != 2) {
             // All vertices must have degree 2
             return false;
         }
@@ -98,47 +93,29 @@ bool Graph::isValidH() {
 }
 
 std::vector<Graph> Graph::getHs() {
-    // Base cases
-    if (this->isValidH()) {
-        // É um H válido se for 2-regular com exatamente uma aresta de cada cubo
-        return { *this };
-    } else if (!this->isValidForH()) {
-        // É válido para se tornar um H se não tiver nenhum nó com grau < 2
-        // e se tiver pelo menos 1 aresta de cada cubo
-        return std::vector<Graph>();
-    }
-
     std::vector<Graph> possibleHs;
+    unsigned long long threeToN = pow(3.0, this->vertices);
 
-    std::vector<Edge*> edges = this->getEdges();
 
     #pragma omp declare reduction (merge : std::vector<Graph> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
-
     #pragma omp parallel for reduction(merge: possibleHs)
-    for (int i = 0; i < this->edges.size(); i++) {
-        // Remove, tentativamente, uma aresta por vez até chegar a um H válido
-        // ou até que o grafo resultante não possa mais gerar um H válido
-        auto edges_local = edges;
-        auto poppedEdge = edges_local.at(i);
-        edges_local.erase(edges_local.begin() + i);
+    for (unsigned long long i = 0; i < threeToN; i++) {
+        std::vector<Edge*> edges;
+        std::map<int, int> nodeDegrees;
 
-        Graph aux = Graph(this->vertices, edges_local);
-        std::vector<Graph> auxPossibleHs = aux.getHs();
-
-        possibleHs.insert(possibleHs.end(), auxPossibleHs.begin(), auxPossibleHs.end());
-
-        edges_local.insert(edges_local.begin(), poppedEdge);
-    }
-
-    // Por fim, haverão Hs duplicados pois diferentes sequencias de
-    // remoção de arestas podem levar a um mesmo resultado
-    // então remove grafos duplicados
-    for (int i = 0; i < possibleHs.size(); i++) {
-        for (int j = i+1; j < possibleHs.size(); j++) {
-            if (possibleHs[i].isEquivalent(possibleHs[j])) {
-                possibleHs.erase(possibleHs.begin() + (j--));
-            }
+        unsigned long long internal_i = i;
+        for (int j = 0; j < this->vertices; j++) {
+            edges.push_back(this->edgesFromCube(j)[internal_i%3]);
+            nodeDegrees[edges.back()->getTerminal1()]++;
+            nodeDegrees[edges.back()->getTerminal2()]++;
+            if (nodeDegrees[edges.back()->getTerminal1()] > 2 || nodeDegrees[edges.back()->getTerminal2()] > 2)
+                break;
+            internal_i /= 3;
         }
+
+        Graph possibleH = Graph(this->vertices, edges);
+        if (possibleH.isValidH())
+            possibleHs.push_back(possibleH);
     }
 
     return possibleHs;

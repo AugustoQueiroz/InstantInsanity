@@ -77,7 +77,7 @@ int main() {
         // Para apresentar a solução queremos orientar o grafo de forma que
         // cada vértice tenha exatamente um arco entrando e um saindo
         std::vector<bool> appearedOnTheLeft = std::vector<bool>(n, false);
-        std::cout << "Frente & Tras:" << std::endl;
+        //std::cout << "Frente & Tras:" << std::endl;
         for (int j = 0; j < H1Edges.size(); j++) {
             if (appearedOnTheLeft[H1Edges[j]->getTerminal1()])
                 H1Edges[j] = H1Edges[j]->inverted();
@@ -86,7 +86,7 @@ int main() {
         }
 
         appearedOnTheLeft = std::vector<bool>(n, false);
-        std::cout << "Esquerda & Direita:" << std::endl;
+        //std::cout << "Esquerda & Direita:" << std::endl;
         for (int j = 0; j < H2Edges.size(); j++) {
             if (appearedOnTheLeft[H2Edges[j]->getTerminal1()])
                 H2Edges[j] = H2Edges[j]->inverted();
